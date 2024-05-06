@@ -14,13 +14,26 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    # product = ProductSerializer() 
+    total_item_price=serializers.SerializerMethodField()
+    total_price=serializers.SerializerMethodField()
+   
     class Meta:
         model=OrderItem
-        fields="__all__"
- 
+        fields=['id','order','product','quantity','unit_price','total_item_price','total_price']
+    def get_total_item_price(self,obj):
+        return obj.total_item_price()
+    
+    def get_total_price(self,obj):
+        return obj.order.get_total()
+    
+        
+    
  
 class OrderSerializer(serializers.ModelSerializer):
+    total_price=serializers.SerializerMethodField()
     class Meta:
         model=Order
-        fields="__all__"
+        fields=['id','user','is_payment','total_price']
+    def get_total_price(self,obj):
+        return obj.get_total()
+    

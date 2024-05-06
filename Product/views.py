@@ -78,8 +78,11 @@ class RemoveOrderItemAPIView(generics.DestroyAPIView):
                     current_orderitem.quantity -= 1
                     current_orderitem.save()
                     serializer = self.serializer_class(current_orderitem)
-                    return Response({'success': 'Product removed from cart'}, status=status.HTTP_200_OK)
-                current_order.delete()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                current_orderitem.delete()
+                if current_order_items.count()==0:
+                    current_order.delete()
+                    return Response({'success': 'your cart was deleted'}, status=status.HTTP_200_OK)
                 return Response({'success': 'remove item your cart'}, status=status.HTTP_200_OK)
                 
             return Response({'error': 'You don\'t have an active cart'}, status=status.HTTP_400_BAD_REQUEST)
